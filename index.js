@@ -1,10 +1,31 @@
-$("#search").button('loading')
-var page = 0;
-var maxPage = 0;
-var per = 10;
+$(".search").button('loading')
+var page = 0
+var maxPage = 0
+var per = 10
 
-var lastReq = "";
-var lastApi = "";
+var lastReq = ""
+var lastApi = ""
+
+var mock = false
+
+var bossData = 
+{
+	scoreRate:
+	[
+		[
+			1, 1, 1.1, 1.1, 1.2
+		],
+		[
+			1.2, 1.2, 1.5, 1.7, 2
+		]
+	],
+	hp: 
+	[
+		6000000, 8000000, 10000000, 12000000, 20000000
+	],
+	max: 2,
+	baseTime: 1593464400
+}
 
 function processPage()
 {
@@ -26,12 +47,51 @@ function processPage()
 	}
 }
 
+function calcHp(clanName, hpBase)
+{
+	$(".footer2").show()
+	var zm = 1
+	var king = 1
+	var cc = 0.0
+	var remain = 0.0
+	var damage = 0
+	var remainHp = 0.0
+	var remainPer = 0.0
+	while (true)
+	{
+		var nowZm = zm > bossData.max ? bossData.max - 1 : zm - 1
+		cc += bossData.scoreRate[nowZm][king - 1] * bossData.hp[king - 1]
+		if (cc > hpBase)
+		{
+			cc -= bossData.scoreRate[nowZm][king - 1] * bossData.hp[king - 1]
+			remain = (hpBase - cc) / bossData.scoreRate[nowZm][king - 1]
+			damage += remain
+			remainPer = 1.0 - remain / bossData.hp[king - 1]
+			remainHp = bossData.hp[king - 1] - remain
+			break
+		}
+		damage += bossData.hp[king - 1]
+		if (king == 5)
+		{
+			zm++
+			king = 1
+			continue
+		}
+		king++
+	}
+	remainPer *= 100
+	$(".clanName").text(clanName)
+	$(".hpDetail").text(zm + "周目" + king + "王 [" + parseInt(remainHp) + "/" + bossData.hp[king - 1] + "]")
+	$(".hp").attr("style", "width: " + remainPer + "%")
+	$(".hp").text(remainPer.toFixed(2) + "%")
+}
+
 function setTableData(table) 
 {
-	$("#clanCore").html("");
+	$("#clanCore").html("")
 	for (var i = 0; i < table.length; i++)
 	{
-		var tr = $("<tr>" +
+		var tr = $('<tr onclick=\"calcHp(\'' + table[i].clan_name + '\',' + table[i].damage + ')\">' +
 		 "<td>" + table[i].rank + "</td>" +
 		 "<td>" + table[i].clan_name + "</td>" +
 		 "<td>" + table[i].damage + "</td>" +
@@ -39,17 +99,19 @@ function setTableData(table)
 		 "</tr>")
 		tr.appendTo($("#clanCore"))
 	}
-	$("#search").button('reset')
+	$(".search").button('reset')
 }
 
-var apiUrl = "https://service-kjcbcnmw-1254119946.gz.apigw.tencentcs.com"
+var apiUrl = mock ? "http://localhost:5002/clan" : "https://service-kjcbcnmw-1254119946.gz.apigw.tencentcs.com"
 
 function onRadioChanged() 
 {
+	$("#bar").val("")
     var c = $('input:radio[name="searchType"]:checked').val() 
 	switch (parseInt(c)) 
 	{
     case 1:
+	case 4:
         $("#bar").attr("type", "number")
 		break;
     case 2:
@@ -88,7 +150,7 @@ function getPage(pageNum)
 {
 	if (pageNum < 0 || pageNum >= maxPage)
 		return
-	$("#search").button('loading') 
+	$(".search").button('loading') 
 	page = pageNum
 	$.ajax(
 	{
@@ -102,9 +164,30 @@ function getPage(pageNum)
 	})
 }
 
+function searchRank()
+{
+	$(".search").button('loading') 
+	page = 0
+	$.ajax(
+	{
+		url: apiUrl + "/line",
+		type: "POST",
+		dataType: "JSON",
+		async: true,
+		contentType: "application/json",
+		success: function(data)
+		{
+			$("#time").text(new Date(data.ts * 1000))
+			maxPage = 0
+			processPage()
+			setTableData(data.data)
+		}
+	})
+}
+
 function search() 
 {
-    $("#search").button('loading') 
+    $(".search").button('loading') 
 	if ($("#bar").val() == "") 
 	{
         defaultPage()
@@ -112,22 +195,25 @@ function search()
     }
 	var c = $('input:radio[name="searchType"]:checked').val() 
 	var text = $("#bar").val()
-	console.log(text)
 	rank = -1
 	switch (parseInt(c))
 	{
 		case 1:
 			lastApi = "/rank/"
 			rank = parseInt(text)
-			break;
+			break
 		case 2:
 			lastApi = "/name/"
 			lastReq = JSON.stringify({"clanName":text})
-			break;
+			break
 		case 3:
 			lastApi = "/leader/"
 			lastReq = JSON.stringify({"leaderName":text})
-			break;
+			break
+		case 4:
+			lastApi = "/score/"
+			rank = parseInt(text)
+			break
 	}
 	page = 0;
 	$.ajax(
