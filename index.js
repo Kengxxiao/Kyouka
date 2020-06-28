@@ -114,14 +114,16 @@ function setTableData(table)
 	$("#clanCore").html("")
 	for (var i = 0; i < table.length; i++)
 	{
+		var nm = table[i].clan_name == undefined ? "该行会已经解散。" : table[i].clan_name
+		var lnm = table[i].clan_name == undefined ? "" : table[i].leader_name
 		var tr = $('<tr>' +
 		 "<td>" + table[i].rank + "</td>" +
-		 "<td>" + table[i].clan_name + "</td>" +
+		 "<td>" + nm + "</td>" +
 		 "<td>" + table[i].damage + "</td>" +
-		 "<td>" + table[i].leader_name + "</td>" +
+		 "<td>" + lnm + "</td>" +
 		 "</tr>")
 		tr.appendTo($("#clanCore"))
-		tr.attr("name", table[i].clan_name == undefined ? "该行会已经解散。" : table[i].clan_name)
+		tr.attr("name", nm)
 		tr.attr("damage", table[i].damage)
 		tr[0].onclick = function()
 		{
