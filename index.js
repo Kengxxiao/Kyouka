@@ -24,11 +24,34 @@ var bossData =
 		6000000, 8000000, 10000000, 12000000, 20000000
 	],
 	max: 2,
-	baseTime: 1593464400
+	baseTime: 1593464400,
+	endTime: 1593964800
+}
+
+function transPage()
+{
+	var p = prompt("请输入要跳转的页码")
+	if (p != null)
+	{
+		var g = parseInt(p)
+		if (g != NaN)
+		{
+			if (g <= 0 || g > maxPage)
+			{
+				alert("页码超出范围，请重试")
+			}
+			else
+			{
+				page = g - 1
+				getPage(page)
+			}
+		}
+	}
 }
 
 function processPage()
 {
+	$("#page2")[0].innerText = (page + 1) + "/" + (maxPage == 0 ? 1 : maxPage)
 	if (page <= 0)
 	{
 		$("#prev").attr("class", "previous disabled")
@@ -91,13 +114,19 @@ function setTableData(table)
 	$("#clanCore").html("")
 	for (var i = 0; i < table.length; i++)
 	{
-		var tr = $('<tr onclick=\"calcHp(\'' + table[i].clan_name + '\',' + table[i].damage + ')\">' +
+		var tr = $('<tr>' +
 		 "<td>" + table[i].rank + "</td>" +
 		 "<td>" + table[i].clan_name + "</td>" +
 		 "<td>" + table[i].damage + "</td>" +
 		 "<td>" + table[i].leader_name + "</td>" +
 		 "</tr>")
 		tr.appendTo($("#clanCore"))
+		tr.attr("name", table[i].clan_name == undefined ? "该行会已经解散。" : table[i].clan_name)
+		tr.attr("damage", table[i].damage)
+		tr[0].onclick = function()
+		{
+			calcHp($(this).attr("name"), $(this).attr("damage"))
+		}
 	}
 	$(".search").button('reset')
 }
@@ -125,7 +154,7 @@ function onRadioChanged()
 
 function processData(data)
 {
-	$("#time").text(new Date(data.ts * 1000))
+	$("#time").text(new Date(data.ts * 1000).toLocaleString())
 	maxPage = Math.ceil(data.full * 1.0 / per);
 	setTableData(data.data)
 	processPage()
@@ -133,6 +162,7 @@ function processData(data)
 
 function defaultPage()
 {
+	page = 0
 	lastApi = "/page/"
 	$.ajax(
 	{
@@ -177,7 +207,8 @@ function searchRank()
 		contentType: "application/json",
 		success: function(data)
 		{
-			$("#time").text(new Date(data.ts * 1000))
+			$("#time").text(new Date(data.ts * 1000).toLocaleString())
+			page = 0
 			maxPage = 0
 			processPage()
 			setTableData(data.data)
