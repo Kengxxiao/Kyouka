@@ -20,6 +20,10 @@ var bossData = {
     endTime: 1593964800,
 };
 
+function convertTime(date) {
+    return new Date(date * 1000).toLocaleString([], { minute: "numeric", hour: "numeric", day: "numeric", month: "narrow", year: "numeric" });
+}
+
 function transPage() {
     var p = prompt("请输入要跳转的页码");
     if (p != null) {
@@ -136,7 +140,7 @@ function processHistory(data) {
     for (var j = 0; j < lst.length; j++) {
         $(lst[j]).html("");
         for (var i = 0; i < data.length; i++) {
-            var li = $("<li><a>" + new Date(data[i] * 1000).toLocaleString() + "</a></li>");
+            var li = $("<li><a>" + convertTime(data[i]) + "</a></li>");
             li.appendTo($(lst[j]));
             li.attr("time", data[i]);
             console.log(li);
@@ -152,7 +156,7 @@ function processData(data) {
     if (data.history != undefined) {
         processHistory(data.history);
     }
-    $("#time").text(new Date(data.ts * 1000).toLocaleString());
+    $("#time").text(convertTime(data.ts));
     maxPage = Math.ceil((data.full * 1.0) / per);
     setTableData(data.data);
     processPage();
@@ -197,7 +201,7 @@ function searchRank() {
         async: true,
         contentType: "application/json",
         success: function (data) {
-            $("#time").text(new Date(data.ts * 1000).toLocaleString());
+            $("#time").text(convertTime(data.ts));
             page = 0;
             maxPage = 0;
             processPage();
