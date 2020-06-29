@@ -7,7 +7,7 @@ var per = 10;
 var lastReq = "";
 var lastApi = "";
 
-var mock = true;
+var mock = false;
 
 var bossData = {
     scoreRate: [
