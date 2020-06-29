@@ -142,6 +142,7 @@ function processHistory(data) {
             console.log(li);
             li[0].onclick = function () {
                 historyRank($(this).attr("time"));
+                $(".navbar-collapse").collapse("hide");
             };
         }
     }
