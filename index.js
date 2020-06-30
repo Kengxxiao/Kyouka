@@ -1,5 +1,4 @@
 $(".search").button("loading");
-$(".historyBtn");
 var page = 0;
 var maxPage = 0;
 var per = 10;
@@ -7,7 +6,9 @@ var per = 10;
 var lastReq = "";
 var lastApi = "";
 
-var mock = false;
+var mock = true;
+var allow = true;
+var waitTime = 1;
 
 var bossData = {
     scoreRate: [
@@ -40,6 +41,10 @@ function transPage() {
 }
 
 function processPage() {
+    allow = false;
+    setTimeout(function () {
+        allow = true;
+    }, waitTime * 1000);
     $("#page2")[0].innerText = page + 1 + "/" + (maxPage == 0 ? 1 : maxPage);
     if (page <= 0) {
         $("#prev").attr("class", "previous disabled");
@@ -241,6 +246,10 @@ function defaultPage() {
 window.onload = defaultPage;
 
 function getPage(pageNum) {
+    if (!allow) {
+        alert("休息一下再翻页吧");
+        return;
+    }
     if (pageNum < 0 || pageNum >= maxPage) return;
     $(".search").button("loading");
     page = pageNum;
