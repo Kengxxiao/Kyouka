@@ -88,12 +88,76 @@ function calcHp(clanName, hpBase) {
     $(".hp").text(remainPer.toFixed(2) + "%");
 }
 
+function searchFav() {
+    $(".search").button("loading");
+    page = 0;
+    $.ajax({
+        url: apiUrl + "/fav",
+        type: "POST",
+        dataType: "JSON",
+        async: true,
+        contentType: "application/json",
+        data: JSON.parse(JSON.stringify(Cookies.get("fav"))),
+        success: processData,
+    });
+}
+
+function favLeader(leaderId, favId) {
+    var i = $("#fav" + favId);
+    var fav = JSON.parse(Cookies.get("fav"));
+    var idx = fav.indexOf(leaderId);
+    if (idx == -1) {
+        if (fav.length >= 5) {
+            alert("收藏过多，请取消一些收藏的公会");
+            return;
+        }
+        fav.push(leaderId);
+        i.attr("class", "glyphicon glyphicon-heart");
+    } else {
+        fav.splice(idx, 1);
+        i.attr("class", "glyphicon glyphicon-heart-empty");
+    }
+    Cookies.set("fav", JSON.stringify(fav));
+}
+
 function setTableData(table) {
     $("#clanCore").html("");
+    if (navigator.cookieEnabled) {
+        if (Cookies.get("fav") == undefined) {
+            Cookies.set("fav", "[]");
+        }
+        var fav = JSON.parse(Cookies.get("fav"));
+    }
     for (var i = 0; i < table.length; i++) {
         var nm = table[i].clan_name == undefined ? "该行会已经解散。" : table[i].clan_name;
         var lnm = table[i].clan_name == undefined ? "" : table[i].leader_name;
-        var tr = $("<tr>" + "<td>" + table[i].rank + "</td>" + "<td>" + nm + "</td>" + "<td>" + table[i].damage + "</td>" + "<td>" + lnm + "</td>" + "</tr>");
+        var tr = $(
+            "<tr>" +
+                "<td>" +
+                table[i].rank +
+                "</td>" +
+                "<td>" +
+                nm +
+                "</td>" +
+                "<td>" +
+                table[i].damage +
+                "</td>" +
+                "<td>" +
+                lnm +
+                "</td>" +
+                (navigator.cookieEnabled
+                    ? "<td><a onclick='favLeader(" +
+                      table[i].leader_viewer_id +
+                      ", " +
+                      i +
+                      ");'><span id='fav" +
+                      i +
+                      "' class='glyphicon glyphicon-" +
+                      (fav.indexOf(table[i].leader_viewer_id) == -1 ? "heart-empty" : "heart") +
+                      "'></span></a></td>"
+                    : "") +
+                "</tr>"
+        );
         tr.appendTo($("#clanCore"));
         tr.attr("name", nm);
         tr.attr("damage", table[i].damage);
@@ -143,7 +207,6 @@ function processHistory(data) {
             var li = $("<li><a>" + convertTime(data[i]) + "</a></li>");
             li.appendTo($(lst[j]));
             li.attr("time", data[i]);
-            console.log(li);
             li[0].onclick = function () {
                 historyRank($(this).attr("time"));
                 $(".navbar-collapse").collapse("hide");
@@ -156,6 +219,7 @@ function processData(data) {
     if (data.history != undefined) {
         processHistory(data.history);
     }
+    $("#time").attr("ts", data.ts);
     $("#time").text(convertTime(data.ts));
     maxPage = Math.ceil((data.full * 1.0) / per);
     setTableData(data.data);

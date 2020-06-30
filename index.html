@@ -25,7 +25,9 @@
                 <form class="navbar-form navbar-right hidden-xs">
                     <button type="button" class="btn btn-block search" data-loading-text="获取中..." onclick="searchRank()">查询当前档线</button>
                 </form>
-
+                <form class="navbar-form navbar-right hidden-xs">
+                    <button type="button" class="btn btn-block search" data-loading-text="获取中..." onclick="searchFav()">查询收藏</button>
+                </form>
                 <form class="navbar-form navbar-right hidden-xs">
                     <li class="dropdown" style="list-style: none;">
                         <button type="button" class="btn btn-block search" data-toggle="dropdown" data-loading-text="获取中...">历史档线 <span class="caret"></span></button>
@@ -36,6 +38,7 @@
         </nav>
         <br />
         <div class="container">
+            <button type="button" class="btn btn-block search visible-xs" data-loading-text="获取中..." onclick="searchFav()">查询收藏</button>
             <button type="button" class="btn btn-block search visible-xs" data-loading-text="获取中..." onclick="searchRank()">查询当前档线</button>
             <br class="visible-xs" />
             <input type="number" id="bar" class="form-control" placeholder="查询内容(支持正则表达式)" required autofocus />
@@ -57,6 +60,7 @@
                             <th>公会名</th>
                             <th>分数</th>
                             <th>会长名</th>
+                            <th>收藏</th>
                         </tr>
                     </thead>
                     <tbody id="clanCore"></tbody>
@@ -98,6 +102,7 @@
             </footer>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/js-cookie@2.2.1/src/js.cookie.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
         <script src="index.js"></script>
     </body>
