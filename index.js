@@ -28,7 +28,7 @@ function transPage() {
     var p = prompt("请输入要跳转的页码");
     if (p != null) {
         var g = parseInt(p);
-        if (g != NaN) {
+        if (!isNaN(g)) {
             if (g <= 0 || g > maxPage) {
                 alert("页码超出范围，请重试");
             } else {
