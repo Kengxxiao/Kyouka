@@ -117,14 +117,14 @@ function favLeader(leaderId, favId) {
         fav.splice(idx, 1);
         i.attr("class", "glyphicon glyphicon-heart-empty");
     }
-    Cookies.set("fav", JSON.stringify(fav));
+    Cookies.set("fav", JSON.stringify(fav), { expires: 30 });
 }
 
 function setTableData(table) {
     $("#clanCore").html("");
     if (navigator.cookieEnabled) {
         if (Cookies.get("fav") == undefined) {
-            Cookies.set("fav", "[]");
+            Cookies.set("fav", "[]", { expires: 30 });
         }
         var fav = JSON.parse(Cookies.get("fav"));
     }
