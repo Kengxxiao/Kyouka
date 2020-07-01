@@ -25,6 +25,11 @@ function convertTime(date) {
     return new Date(date * 1000).toLocaleString([], { minute: "numeric", hour: "numeric", day: "numeric", month: "narrow", year: "numeric" });
 }
 
+function serverError(xhr, state, errorThrown) {
+    $(".search").button("reset");
+    alert(xhr.responseJSON.msg);
+}
+
 function transPage() {
     var p = prompt("请输入要跳转的页码");
     if (p != null) {
@@ -104,6 +109,7 @@ function searchFav() {
         contentType: "application/json",
         data: JSON.parse(JSON.stringify(Cookies.get("fav"))),
         success: processData,
+        error: serverError,
     });
 }
 
@@ -201,6 +207,7 @@ function historyRank(time) {
         async: true,
         contentType: "application/json",
         success: processData,
+        error: serverError,
     });
 }
 
@@ -240,6 +247,7 @@ function defaultPage() {
         dataType: "JSON",
         async: true,
         success: processData,
+        error: serverError,
     });
 }
 
@@ -261,6 +269,7 @@ function getPage(pageNum) {
         contentType: "application/json",
         data: lastReq,
         success: processData,
+        error: serverError,
     });
 }
 
@@ -275,11 +284,9 @@ function searchRank() {
         contentType: "application/json",
         success: function (data) {
             $("#time").text(convertTime(data.ts));
-            page = 0;
-            maxPage = 0;
-            processPage();
-            setTableData(data.data);
+            processData(data);
         },
+        error: serverError,
     });
 }
 
@@ -319,5 +326,6 @@ function search() {
         contentType: "application/json",
         data: lastReq,
         success: processData,
+        error: serverError,
     });
 }

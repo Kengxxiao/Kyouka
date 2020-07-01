@@ -41,11 +41,11 @@
             <button type="button" class="btn btn-block search visible-xs" data-loading-text="获取中..." onclick="searchFav()">查询收藏</button>
             <button type="button" class="btn btn-block search visible-xs" data-loading-text="获取中..." onclick="searchRank()">查询当前档线</button>
             <br class="visible-xs" />
-            <input type="number" id="bar" class="form-control" placeholder="查询内容(支持正则表达式)" required autofocus />
+            <input type="text" id="bar" class="form-control" placeholder="查询内容(支持正则表达式)" required autofocus />
             <br />
             <div class="form-group">
-                <label class="radio-inline"> <input type="radio" value="1" name="searchType" onchange="onRadioChanged()" checked="true" />按排名</label>
-                <label class="radio-inline"> <input type="radio" value="2" name="searchType" onchange="onRadioChanged()" />按公会名</label>
+                <label class="radio-inline"> <input type="radio" value="2" name="searchType" onchange="onRadioChanged()" checked="true" />按公会名</label>
+                <label class="radio-inline"> <input type="radio" value="1" name="searchType" onchange="onRadioChanged()" />按排名</label>
                 <label class="radio-inline"> <input type="radio" value="3" name="searchType" onchange="onRadioChanged()" />按会长名</label>
                 <label class="radio-inline"> <input type="radio" value="4" name="searchType" onchange="onRadioChanged()" />按分数</label>
             </div>
