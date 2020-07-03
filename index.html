@@ -23,14 +23,14 @@
                     </div>
                 </div>
                 <form class="navbar-form navbar-right hidden-xs">
-                    <button type="button" class="btn btn-block search" data-loading-text="获取中..." onclick="searchRank()">查询当前档线</button>
+                    <button type="button" class="btn btn-block search" data-loading-text="获取中..." onclick="searchRank()">查询档线</button>
                 </form>
                 <form class="navbar-form navbar-right hidden-xs">
                     <button type="button" class="btn btn-block search" data-loading-text="获取中..." onclick="searchFav()">查询收藏</button>
                 </form>
                 <form class="navbar-form navbar-right hidden-xs">
                     <li class="dropdown" style="list-style: none;">
-                        <button type="button" class="btn btn-block search" data-toggle="dropdown" data-loading-text="获取中...">历史档线 <span class="caret"></span></button>
+                        <button type="button" class="btn btn-block search" data-toggle="dropdown" data-loading-text="获取中...">历史数据 <span class="caret"></span></button>
                         <ul class="dropdown-menu" id="historyList"></ul>
                     </li>
                 </form>
@@ -39,7 +39,7 @@
         <br />
         <div class="container">
             <button type="button" class="btn btn-block search visible-xs" data-loading-text="获取中..." onclick="searchFav()">查询收藏</button>
-            <button type="button" class="btn btn-block search visible-xs" data-loading-text="获取中..." onclick="searchRank()">查询当前档线</button>
+            <button type="button" class="btn btn-block search visible-xs" data-loading-text="获取中..." onclick="searchRank()">查询档线</button>
             <br class="visible-xs" />
             <input type="text" id="bar" class="form-control" placeholder="查询内容(支持正则表达式)" required autofocus />
             <br />
@@ -49,7 +49,8 @@
                 <label class="radio-inline"> <input type="radio" value="3" name="searchType" onchange="onRadioChanged()" />按会长名</label>
                 <label class="radio-inline"> <input type="radio" value="4" name="searchType" onchange="onRadioChanged()" />按分数</label>
             </div>
-            <button type="submit" class="btn btn-primary btn-block search" data-loading-text="获取中..." onclick="search()">查询</button>
+            <button type="button" class="btn btn-primary btn-block search" data-loading-text="获取中..." onclick="search()">查询</button>
+            <button type="button" class="btn btn-primary btn-block search" data-loading-text="获取中..." onclick="reset()">重置历史查询器</button>
             <h2 class="sub-header">查询结果</h2>
             <h5 id="time"></h5>
             <div class="table-responsive">
