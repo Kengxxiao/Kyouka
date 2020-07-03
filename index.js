@@ -2,7 +2,7 @@ var page = 0;
 var maxPage = 0;
 var per = 10;
 
-var lastReq = JSON.stringify({history: 0});
+var lastReq = JSON.stringify({ history: 0 });
 var lastApi = "";
 
 var mock = false;
@@ -64,11 +64,10 @@ function processPage() {
     }
 }
 
-function reset()
-{
-	nowHistoryTime = 0;
-	lastReq = JSON.stringify({history: 0})
-	defaultPage();
+function reset() {
+    nowHistoryTime = 0;
+    lastReq = JSON.stringify({ history: 0 });
+    defaultPage();
 }
 
 function calcHp(clanName, hpBase) {
@@ -115,7 +114,7 @@ function searchFav() {
         dataType: "JSON",
         async: true,
         contentType: "application/json",
-        data: JSON.stringify({ids: JSON.parse(Cookies.get("fav")), history: parseInt(nowHistoryTime)}),
+        data: JSON.stringify({ ids: JSON.parse(Cookies.get("fav")), history: parseInt(nowHistoryTime) }),
         success: processData,
         error: serverError,
     });
@@ -208,9 +207,9 @@ function onRadioChanged() {
 
 function historyRank(time) {
     page = 0;
-	nowHistoryTime = time;
-	lastReq = JSON.stringify({history: parseInt(time)})
-	defaultPage();
+    nowHistoryTime = time;
+    lastReq = JSON.stringify({ history: parseInt(time) });
+    defaultPage();
 }
 
 var lst = ["#historyList", "#historyListMobile"];
@@ -241,33 +240,30 @@ function processData(data) {
 }
 
 function defaultPage() {
-	$(".search").button("loading");
+    $(".search").button("loading");
     page = 0;
     lastApi = "/page/";
-	if (nowHistoryTime == 0)
-	{
-		$.ajax({
-		    url: apiUrl + "/default",
-		    type: "GET",
-		    dataType: "JSON",
-		    async: true,
-		    success: processData,
-		    error: serverError,
-		});
-	}
-	else
-	{
-		$.ajax({
-		    url: apiUrl + "/page/0",
-		    type: "POST",
-		    dataType: "JSON",
-			contentType: "application/json",
-		    async: true,
-			data: JSON.stringify({history: parseInt(nowHistoryTime)}),
-		    success: processData,
-		    error: serverError,
-		});
-	}
+    if (nowHistoryTime == 0) {
+        $.ajax({
+            url: apiUrl + "/default",
+            type: "GET",
+            dataType: "JSON",
+            async: true,
+            success: processData,
+            error: serverError,
+        });
+    } else {
+        $.ajax({
+            url: apiUrl + "/page/0",
+            type: "POST",
+            dataType: "JSON",
+            contentType: "application/json",
+            async: true,
+            data: JSON.stringify({ history: parseInt(nowHistoryTime) }),
+            success: processData,
+            error: serverError,
+        });
+    }
 }
 
 window.onload = defaultPage;
@@ -301,7 +297,7 @@ function searchRank() {
         dataType: "JSON",
         async: true,
         contentType: "application/json",
-		data: JSON.stringify({history: parseInt(nowHistoryTime)}),
+        data: JSON.stringify({ history: parseInt(nowHistoryTime) }),
         success: function (data) {
             $("#time").text(convertTime(data.ts));
             processData(data);
@@ -322,20 +318,20 @@ function search() {
         case 1:
             lastApi = "/rank/";
             rank = parseInt(text);
-			lastReq = JSON.stringify({history: parseInt(nowHistoryTime)})
+            lastReq = JSON.stringify({ history: parseInt(nowHistoryTime) });
             break;
         case 2:
             lastApi = "/name/";
-            lastReq = JSON.stringify({history: parseInt(nowHistoryTime), clanName: text });
+            lastReq = JSON.stringify({ history: parseInt(nowHistoryTime), clanName: text });
             break;
         case 3:
             lastApi = "/leader/";
-            lastReq = JSON.stringify({history: parseInt(nowHistoryTime), leaderName: text });
+            lastReq = JSON.stringify({ history: parseInt(nowHistoryTime), leaderName: text });
             break;
         case 4:
             lastApi = "/score/";
             rank = parseInt(text);
-			lastReq = JSON.stringify({history: parseInt(nowHistoryTime)})
+            lastReq = JSON.stringify({ history: parseInt(nowHistoryTime) });
             break;
     }
     page = 0;
