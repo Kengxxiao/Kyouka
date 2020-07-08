@@ -174,7 +174,7 @@ var app = new Vue({
             setTimeout(() => {
                 this.foot2Info.per = "width: " + remainPer + "%";
                 this.foot2Info.perText = remainPer.toFixed(2) + "%";
-            }, 100);
+            }, this.foot2show ? 0 : 100);
         },
         calcHp(clan) {
             let clanName = clan.clan_name;
