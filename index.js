@@ -1,3 +1,6 @@
+setTimeout(function () {
+    $(".search").button("loading");
+}, 0);
 var page = 0;
 var maxPage = 0;
 var per = 10;
@@ -265,8 +268,6 @@ function defaultPage() {
         });
     }
 }
-
-window.onload = defaultPage;
 
 function getPage(pageNum) {
     if (!allow) {
