@@ -1,35 +1,33 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta charset="utf-8" />
-        <title>镜华 - 公会战排名查询</title>
-        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
-        <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/js-cookie@2.2.1/src/js.cookie.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
-        <script src="index.js"></script>
-        <script data-ad-client="ca-pub-8278251579038034" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-171663021-1"></script>
-        <script>
-            defaultPage();
-            window.dataLayer = window.dataLayer || [];
-            function gtag() {
-                dataLayer.push(arguments);
-            }
-            gtag("js", new Date());
 
-            gtag("config", "UA-171663021-1");
-        </script>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <title>镜华 - 公会战排名查询</title>
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-171663021-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag("js", new Date());
+        gtag("config", "UA-171663021-1");
+    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous" />
+</head>
+<style></style>
 
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous" />
-    </head>
-    <style></style>
-    <body style="padding-top: 50px;">
+<body style="padding-top: 50px;">
+    <div id="Kyouka">
         <nav class="navbar navbar-inverse navbar-fixed-top">
             <div class="container">
-                <a class="navbar-brand visible-xs" href="https://kengxxiao.github.io/Kyouka/" style="width: calc(100% - 59px);">镜华 - 公会战排名查询</a>
+                <a class="navbar-brand visible-xs" href="https://kengxxiao.github.io/Kyouka/"
+                    style="width: calc(100% - 59px);">镜华 - 公会战排名查询</a>
                 <a class="navbar-brand hidden-xs" href="https://kengxxiao.github.io/Kyouka/">镜华 - 公会战排名查询</a>
                 <div class="visible-xs">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -38,68 +36,89 @@
                         <span class="icon-bar"></span>
                     </button>
                     <div class="collapse navbar-collapse">
-                        <ul class="navbar-nav nav" id="historyListMobile"></ul>
+                        <ul class="navbar-nav nav" id="historyListMobile">
+                            <li v-for="(item,i) in historyData" :key="i" :time="item.time"
+                            @click="historyRank(item.time)"><a>{{item.date}}</a></li>
+                        </ul>
                     </div>
                 </div>
                 <form class="navbar-form navbar-right hidden-xs">
-                    <button type="button" class="btn btn-block search" data-loading-text="获取中..." onclick="searchRank()">查询档线</button>
+                    <button type="button" class="btn btn-block search" data-loading-text="获取中..."
+                        @click="searchRank">查询档线</button>
                 </form>
                 <form class="navbar-form navbar-right hidden-xs">
-                    <button type="button" class="btn btn-block search" data-loading-text="获取中..." onclick="searchFav()">查询收藏</button>
+                    <button type="button" class="btn btn-block search" data-loading-text="获取中..."
+                        @click="searchFav">查询收藏</button>
                 </form>
                 <form class="navbar-form navbar-right hidden-xs">
                     <li class="dropdown" style="list-style: none;">
-                        <button type="button" class="btn btn-block search" data-toggle="dropdown" data-loading-text="获取中...">历史数据 <span class="caret"></span></button>
-                        <ul class="dropdown-menu" id="historyList"></ul>
+                        <button type="button" class="btn btn-block search" data-toggle="dropdown"
+                            data-loading-text="获取中...">历史数据 <span class="caret"></span></button>
+                        <ul class="dropdown-menu" id="historyList">
+                            <li v-for="(item,i) in historyData" :key="i" :time="item.time"
+                                @click="historyRank(item.time)"><a>{{item.date}}</a></li>
+                        </ul>
                     </li>
                 </form>
             </div>
         </nav>
         <br />
         <div class="container">
-            <button type="button" class="btn btn-block search visible-xs" data-loading-text="获取中..." onclick="searchFav()">查询收藏</button>
-            <button type="button" class="btn btn-block search visible-xs" data-loading-text="获取中..." onclick="searchRank()">查询档线</button>
+            <button type="button" class="btn btn-block search visible-xs" data-loading-text="获取中..."
+                @click="searchFav()">查询收藏</button>
+            <button type="button" class="btn btn-block search visible-xs" data-loading-text="获取中..."
+                @click="searchRank()">查询档线</button>
             <br class="visible-xs" />
-            <input type="text" id="bar" class="form-control" placeholder="查询内容(支持正则表达式)" required autofocus />
+            <input :type="inputtype" id="bar" v-model="selectdata" class="form-control" placeholder="查询内容(支持正则表达式)"
+                required autofocus />
             <br />
             <div class="form-group">
-                <label class="radio-inline"> <input type="radio" value="2" name="searchType" onchange="onRadioChanged()" checked="true" />按公会名</label>
-                <label class="radio-inline"> <input type="radio" value="1" name="searchType" onchange="onRadioChanged()" />按排名</label>
-                <label class="radio-inline"> <input type="radio" value="3" name="searchType" onchange="onRadioChanged()" />按会长名</label>
-                <label class="radio-inline"> <input type="radio" value="4" name="searchType" onchange="onRadioChanged()" />按分数</label>
+                <label class="radio-inline" v-for="(item,i) in selectType" :key="i">
+                    <input type="radio" :value="i" name="searchType" v-model="selected" />
+                    {{item}}
+                </label>
+
             </div>
-            <button type="button" class="btn btn-primary btn-block search" data-loading-text="获取中..." onclick="search()">查询</button>
-            <button type="button" class="btn btn-primary btn-block search" data-loading-text="获取中..." onclick="reset()">重置历史查询器</button>
+            <button type="button" class="btn btn-primary btn-block search" data-loading-text="获取中..."
+                @click="search()">查询</button>
+            <button type="button" class="btn btn-primary btn-block search" data-loading-text="获取中..."
+                @click="reset()">重置历史查询器</button>
             <h2 class="sub-header">查询结果</h2>
-            <h5 id="time"></h5>
+            <h5 id="time">{{showData.time}}</h5>
             <div class="table-responsive">
                 <table id="result" class="table table-striped">
                     <thead>
                         <tr>
-                            <th>排名</th>
-                            <th>公会名</th>
-                            <th>分数</th>
-                            <th>会长名</th>
-                            <th>收藏</th>
+                            <th v-for="(item,i) in showData.header" :key="i">{{item}}</th>
                         </tr>
                     </thead>
-                    <tbody id="clanCore"></tbody>
+                    <tbody id="clanCore">
+                        <tr v-for="(item,i) in showData.body" :key="i" @click="calcHp(item)">
+                            <td v-for="(xd,idx) in item" :key="idx">{{xd}}</td>
+                            <td @click="favLeader(i)">
+                                <span v-if="favSelected[i]===0" class="glyphicon glyphicon-heart-empty">
+                                </span>
+                                <span v-if="favSelected[i]===1" class="glyphicon glyphicon-heart">
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
             <ul class="pager">
-                <li id="prev" class="previous disabled" onclick="getPage(page - 1)">
+                <li id="prev" class="previous" :class="pageinfo.prevDis" @click="getPage(pageinfo.page-1)">
                     <a>&larr; 上一页</a>
                 </li>
-                <li class="navbar-btn" onclick="transPage()"><a id="page2"></a></li>
-                <li id="next" class="next disabled" onclick="getPage(page + 1)">
+                <li class="navbar-btn" @click="transPage"><a id="page2">{{pageinfo.show}}</a></li>
+                <li id="next" class="next" :class="pageinfo.nextDis" @click="getPage(pageinfo.page+1)">
                     <a>下一页 &rarr;</a>
                 </li>
             </ul>
-            <div class="footer2 container hidden-xs" style="display: none;">
-                <h5 class="sub-header clanName"></h5>
-                <h5 class="sub-header hpDetail"></h5>
+            <div class="footer2 container hidden-xs" v-if="foot2show">
+                <h5 class="sub-header clanName">{{foot2Info.clanName}}</h5>
+                <h5 class="sub-header hpDetail">{{foot2Info.zminfo}}</h5>
                 <div class="progress">
-                    <div class="progress-bar hp"></div>
+                    <div class="progress-bar hp" :style="foot2Info.per">{{foot2Info.perText}}</div>
                 </div>
             </div>
             <div class="visible-xs">
@@ -110,16 +129,23 @@
                 <br />
                 <br />
             </div>
-
             <footer class="navbar-fixed-bottom visible-xs panel-footer panel-primary">
-                <div class="footer2 container" style="display: none;">
-                    <h5 class="sub-header clanName"></h5>
-                    <h5 class="sub-header hpDetail"></h5>
+                <div class="footer2 container" v-if="foot2show">
+                    <h5 class="sub-header clanName">{{foot2Info.clanName}}</h5>
+                    <h5 class="sub-header hpDetail">{{foot2Info.zminfo}}</h5>
                     <div class="progress">
-                        <div class="progress-bar hp"></div>
+                        <div class="progress-bar hp" :style="foot2Info.per">{{foot2Info.perText}}</div>
                     </div>
                 </div>
-            </footer>
         </div>
-    </body>
+    </div>
+    </footer>
+    </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2.2.1/src/js.cookie.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+    <script src="index.js"></script>
+</body>
+
 </html>
