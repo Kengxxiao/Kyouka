@@ -57,10 +57,10 @@ var app = new Vue({
     },
     watch: {
         selectRange: {
-            handler(ndata,odata) {
+            handler(ndata, odata) {
                 console.log(ndata)
                 let val = ndata.selected
-                if(val != odata.selected){
+                if (val != odata.selected) {
                     this.selectdata = ""
                 }
                 switch (parseInt(val)) {
@@ -89,7 +89,7 @@ var app = new Vue({
                     default:
                         return;
                 }
-               
+
             },
             deep: true
         },
@@ -141,7 +141,7 @@ var app = new Vue({
                 this.pageinfo.nextDis = ""
             }
         },
-        getPage(val){
+        getPage(val) {
             if (!this.allow) {
                 alert("休息一下再翻页吧");
                 return;
@@ -170,9 +170,11 @@ var app = new Vue({
             this.foot2show = true;
         },
         setFootPer(remainPer) {
-            this.foot2Info.per = "width: " + remainPer + "%";
-            this.foot2Info.perText = remainPer.toFixed(2) + "%";
             this.showfoot();
+            setTimeout(() => {
+                this.foot2Info.per = "width: " + remainPer + "%";
+                this.foot2Info.perText = remainPer.toFixed(2) + "%";
+            }, 100);
         },
         calcHp(clan) {
             let clanName = clan.clan_name;
@@ -286,7 +288,7 @@ var app = new Vue({
         },
         processHistory(data) {
             $(".navbar-collapse").collapse("hide");
-            this.historyData =[];
+            this.historyData = [];
             for (var i = 0; i < data.length; i++) {
                 let his = {
                     time: data[i],
@@ -341,7 +343,7 @@ var app = new Vue({
                 async: true,
                 contentType: "application/json",
                 data: JSON.stringify({ history: parseInt(this.nowHistoryTime) }),
-                success:  (data)=> {
+                success: (data) => {
                     this.showData.time = this.convertTime(data.ts);
                     this.processData(data);
                 },
@@ -354,8 +356,8 @@ var app = new Vue({
                 this.defaultPage();
                 return;
             }
-            if(!this.rank){
-                this.rank=-1;
+            if (!this.rank) {
+                this.rank = -1;
             }
             this.pageinfo.page = 0;
             $.ajax({
