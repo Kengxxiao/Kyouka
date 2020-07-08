@@ -214,7 +214,7 @@ var app = new Vue({
         },
         searchFav() {
             $(".search").button("loading");
-            this.page = 0;
+            this.pageinfo.page = 0;
             $.ajax({
                 url: this.apiUrl + "/fav",
                 type: "POST",
@@ -236,12 +236,13 @@ var app = new Vue({
                     return;
                 }
                 fav.push(leaderId);
-                this.favSelected[id] = 1;
+                this.favSelected[id] = "glyphicon glyphicon-heart";
             } else {
                 fav.splice(idx, 1);
 
-                this.favSelected[id] = 0;
+                this.favSelected[id] = "glyphicon glyphicon-heart-empty";
             }
+            this.$forceUpdate();
             Cookies.set("fav", JSON.stringify(fav), { expires: 30 });
         },
         setTableData(table) {
@@ -259,7 +260,7 @@ var app = new Vue({
                     leader_name: item.leader_name,
                 }
                 this.showData.body.push(tableData)
-                this.favSelected.push(0);
+                this.favSelected.push("glyphicon glyphicon-heart-empty");
             }
             if (navigator.cookieEnabled) {
                 if (Cookies.get("fav") == undefined) {
@@ -270,7 +271,7 @@ var app = new Vue({
                     let xid = 0;
                     for (let t of table) {
                         if (t.leader_viewer_id == f) {
-                            this.favSelected[xid] = 1;
+                            this.favSelected[xid] = "glyphicon glyphicon-heart";
                         }
                         xid = xid + 1
                     }
@@ -281,7 +282,7 @@ var app = new Vue({
         },
         historyRank(time) {
 
-            this.page = 0;
+            this.pageinfo.page = 0;
             this.nowHistoryTime = time;
             this.lastReq = JSON.stringify({ history: parseInt(time) });
             this.defaultPage();
@@ -309,7 +310,7 @@ var app = new Vue({
         },
         defaultPage() {
             $(".search").button("loading");
-            this.page = 0;
+            this.pageinfo.page = 0;
             this.lastApi = "/page/";
             if (this.nowHistoryTime == 0) {
                 $.ajax({
