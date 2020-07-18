@@ -35,7 +35,7 @@ var app = new Vue({
             baseTime: 1593464400,
             endTime: 1593964800,
         },
-        apiUrl: "https://service-kjcbcnmw-1254119946.gz.apigw.tencentcs.com",
+        apiUrl: "https://service-kjcbcnmw-1254119946.gz.apigw.tencentcs.com/",
         foot2show: false,
         foot2Info: {
             clanName: "",
@@ -91,13 +91,24 @@ var app = new Vue({
                 }
 
             },
-            deep: true
+            deep: true,
+            immediate: false
         },
         proTableData: function (val) {
             $(".navbar-collapse").collapse("hide");
         }
     },
     mounted() {
+        let type = this.getUrlKey("type", window.location.href)
+        let data = this.getUrlKey("data", window.location.href)
+        if (type != null && data != null) {
+            this.selected = type;
+            this.selectdata = data;
+            setTimeout(() => {
+                this.search();
+            }, 300);
+            return;
+        }
         this.defaultPage();
     },
     methods: {
@@ -371,6 +382,10 @@ var app = new Vue({
                 success: this.processData,
                 error: this.serverError,
             });
+        },
+        getUrlKey(name, url) {
+            return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(url) || [, ""])[1].replace(/\+/g, '%20')) || null
+
         }
     }
 })
