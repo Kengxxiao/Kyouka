@@ -1,10 +1,10 @@
 var app = new Vue({
-    el: '#Kyouka',
+    el: "#Kyouka",
     data: {
         showData: {
             header: ["排名", "公会名", "分数", "会长名", "收藏"],
             time: "",
-            body: []
+            body: [],
         },
         historyData: [],
         inputtype: "text",
@@ -41,27 +41,26 @@ var app = new Vue({
             clanName: "",
             zminfo: "",
             per: "",
-            perText: ""
+            perText: "",
         },
         proTableData: [],
-        favSelected: []
+        favSelected: [],
     },
     computed: {
         selectRange() {
-            const { selected, selectdata } = this
+            const { selected, selectdata } = this;
             return {
                 selected,
-                selectdata
-            }
-        }
+                selectdata,
+            };
+        },
     },
     watch: {
         selectRange: {
             handler(ndata, odata) {
-                console.log(ndata)
-                let val = ndata.selected
+                let val = ndata.selected;
                 if (val != odata.selected) {
-                    this.selectdata = ""
+                    this.selectdata = "";
                 }
                 switch (parseInt(val)) {
                     case 1:
@@ -89,18 +88,17 @@ var app = new Vue({
                     default:
                         return;
                 }
-
             },
             deep: true,
-            immediate: false
+            immediate: false,
         },
         proTableData: function (val) {
             $(".navbar-collapse").collapse("hide");
-        }
+        },
     },
     mounted() {
-        let type = this.getUrlKey("type", window.location.href)
-        let data = this.getUrlKey("data", window.location.href)
+        let type = this.getUrlKey("type", window.location.href);
+        let data = this.getUrlKey("data", window.location.href);
         if (type != null && data != null) {
             this.selected = type;
             this.selectdata = data;
@@ -128,7 +126,7 @@ var app = new Vue({
                         alert("页码超出范围，请重试");
                     } else {
                         this.pageinfo.page = g - 1;
-                        this.getPage(this.pageinfo.page)
+                        this.getPage(this.pageinfo.page);
                     }
                 }
             }
@@ -137,19 +135,18 @@ var app = new Vue({
             this.allow = false;
             setTimeout(() => {
                 this.allow = true;
-            },
-                this.waitTime * 1000);
+            }, this.waitTime * 1000);
             this.pageinfo.show = this.pageinfo.page + 1 + "/" + (this.pageinfo.maxPage == 0 ? 1 : this.pageinfo.maxPage);
 
             if (this.pageinfo.page <= 0) {
-                this.pageinfo.prevDis = "disabled"
+                this.pageinfo.prevDis = "disabled";
             } else {
-                this.pageinfo.prevDis = ""
+                this.pageinfo.prevDis = "";
             }
             if (this.pageinfo.page + 1 >= this.pageinfo.maxPage) {
-                this.pageinfo.nextDis = "disabled"
+                this.pageinfo.nextDis = "disabled";
             } else {
-                this.pageinfo.nextDis = ""
+                this.pageinfo.nextDis = "";
             }
         },
         getPage(val) {
@@ -182,10 +179,13 @@ var app = new Vue({
         },
         setFootPer(remainPer) {
             this.showfoot();
-            setTimeout(() => {
-                this.foot2Info.per = "width: " + remainPer + "%";
-                this.foot2Info.perText = remainPer.toFixed(2) + "%";
-            }, this.foot2show ? 0 : 100);
+            setTimeout(
+                () => {
+                    this.foot2Info.per = "width: " + remainPer + "%";
+                    this.foot2Info.perText = remainPer.toFixed(2) + "%";
+                },
+                this.foot2show ? 0 : 100
+            );
         },
         calcHp(clan) {
             let clanName = clan.clan_name;
@@ -220,12 +220,15 @@ var app = new Vue({
 
             this.foot2Info.clanName = clanName;
             this.foot2Info.zminfo = zm + "周目" + king + "王 [" + parseInt(remainHp) + "/" + this.bossData.hp[king - 1] + "]";
-            this.setFootPer(remainPer)
-
+            this.setFootPer(remainPer);
         },
         searchFav() {
             $(".search").button("loading");
             this.pageinfo.page = 0;
+            var favc = JSON.parse(Cookies.get("fav"));
+            for (var i = 0; i < favc.length; i++) {
+                ga("send", "event", "kyouka", "fav", favc[i]);
+            }
             $.ajax({
                 url: this.apiUrl + "/fav",
                 type: "POST",
@@ -257,20 +260,19 @@ var app = new Vue({
             Cookies.set("fav", JSON.stringify(fav), { expires: 30 });
         },
         setTableData(table) {
-
             this.favSelected = [];
             this.showData.body = [];
             for (let item of table) {
                 if (item.clan_name == undefined) {
-                    item.clan_name = "该行会已解散"
+                    item.clan_name = "该行会已解散";
                 }
                 let tableData = {
                     rank: item.rank,
                     clan_name: item.clan_name,
                     damage: item.damage,
                     leader_name: item.leader_name,
-                }
-                this.showData.body.push(tableData)
+                };
+                this.showData.body.push(tableData);
                 this.favSelected.push("glyphicon glyphicon-heart-empty");
             }
             if (navigator.cookieEnabled) {
@@ -284,7 +286,7 @@ var app = new Vue({
                         if (t.leader_viewer_id == f) {
                             this.favSelected[xid] = "glyphicon glyphicon-heart";
                         }
-                        xid = xid + 1
+                        xid = xid + 1;
                     }
                 }
             }
@@ -292,7 +294,6 @@ var app = new Vue({
             $(".search").button("reset");
         },
         historyRank(time) {
-
             this.pageinfo.page = 0;
             this.nowHistoryTime = time;
             this.lastReq = JSON.stringify({ history: parseInt(time) });
@@ -304,11 +305,10 @@ var app = new Vue({
             for (var i = 0; i < data.length; i++) {
                 let his = {
                     time: data[i],
-                    date: this.convertTime(data[i])
-                }
+                    date: this.convertTime(data[i]),
+                };
                 this.historyData.push(his);
             }
-
         },
         processData(data) {
             if (data.history != undefined) {
@@ -382,13 +382,10 @@ var app = new Vue({
                 success: this.processData,
                 error: this.serverError,
             });
+            //ga('send', 'event', 'kyouka', 'search', this.lastReq)
         },
         getUrlKey(name, url) {
-            return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(url) || [, ""])[1].replace(/\+/g, '%20')) || null
-
-        }
-    }
-})
-
-
-
+            return decodeURIComponent((new RegExp("[?|&]" + name + "=" + "([^&;]+?)(&|#|;|$)").exec(url) || [, ""])[1].replace(/\+/g, "%20")) || null;
+        },
+    },
+});
