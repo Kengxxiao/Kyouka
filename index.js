@@ -110,11 +110,21 @@ var app = new Vue({
         this.defaultPage();
     },
     methods: {
+        disableMirror() {
+            if (navigator.cookieEnabled) {
+                Cookies.set("mirror", "", { expires: 90 });
+            }
+            $("#mirror").hide();
+        },
         convertTime(date) {
             return new Date(date * 1000).toLocaleString([], { minute: "numeric", hour: "numeric", day: "numeric", month: "narrow", year: "numeric" });
         },
         serverError(xhr, state, errorThrown) {
             $(".search").button("reset");
+            if (xhr.responseJSON == undefined) {
+                alert("无法连接到服务器，请刷新后重试");
+                return;
+            }
             alert(xhr.responseJSON.msg);
         },
         transPage() {
