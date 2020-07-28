@@ -69,6 +69,12 @@
                             </ul>
                         </li>
                     </form>
+                    <form class="navbar-form navbar-right hidden-xs">
+                        <button type="button" class="btn btn-block" onclick="window.location.href='https://github.com/Kengxxiao/Kyouka/issues'">意见反馈(Github)</button>
+                    </form>
+                    <form class="navbar-form navbar-right hidden-xs">
+                        <button type="button" class="btn btn-block" onclick="window.location.href='https://nga.178.com/read.php?tid=22368702'">意见反馈(NGA)</button>
+                    </form>
                 </div>
             </nav>
             <br />
@@ -83,6 +89,12 @@
                         <span class="glyphicon glyphicon-remove" v-on:click="disableMirror()"></span>
                     </div>
                     <div class="panel-body">检测到您可能来自中国大陆，当Github Pages不可用时，您可以使用该由Netlify提供的镜像站进入网站。<a href="https://kyouka.kengxxiao.com/">镜像链接</a></div>
+                </div>
+                <div class="visible-xs">
+                    <button type="button" style="float: left; width: 49%;" class="btn btn-block btn-warning" onclick="window.location.href='https://nga.178.com/read.php?tid=22368702'">意见反馈(NGA)</button>
+                    <button type="button" style="float: right; width: 49%; margin-top: 0px;" class="btn btn-block btn-warning" onclick="window.location.href='https://github.com/Kengxxiao/Kyouka/issues'">意见反馈(Github)</button>
+                    <br />
+                    <br />
                 </div>
                 <button type="button" class="btn btn-block search visible-xs" data-loading-text="获取中..." @click="searchFav()">查询收藏</button>
                 <button type="button" class="btn btn-block search visible-xs" data-loading-text="获取中..." @click="searchRank()">查询档线</button>
