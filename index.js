@@ -107,6 +107,9 @@ var app = new Vue({
             }, 300);
             return;
         }
+        $(document).ajaxSend(function (ev, xhr, settings) {
+            xhr.setRequestHeader("Custom-Source", "KyoukaOfficial");
+        });
         this.defaultPage();
     },
     methods: {
