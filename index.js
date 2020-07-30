@@ -177,7 +177,7 @@ var app = new Vue({
             this.pageinfo.page = 0;
             this.nowHistoryTime = 0;
             //this.lastReq = JSON.stringify({ history: 0 });
-            console.log(this.lastReq);
+            //console.log(this.lastReq);
             this.defaultPage();
         },
         showfoot() {
