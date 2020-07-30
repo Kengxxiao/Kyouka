@@ -56,42 +56,6 @@ var app = new Vue({
         },
     },
     watch: {
-        selectRange: {
-            handler(ndata, odata) {
-                let val = ndata.selected;
-                if (val != odata.selected) {
-                    this.selectdata = "";
-                }
-                switch (parseInt(val)) {
-                    case 1:
-                        this.lastApi = "/rank/";
-                        this.rank = parseInt(this.selectdata);
-                        this.lastReq = JSON.stringify({ history: parseInt(this.nowHistoryTime) });
-                        this.inputtype = "number";
-                        break;
-                    case 4:
-                        this.lastApi = "/score/";
-                        this.rank = parseInt(this.selectdata);
-                        this.lastReq = JSON.stringify({ history: parseInt(this.nowHistoryTime) });
-                        this.inputtype = "number";
-                        break;
-                    case 2:
-                        this.lastApi = "/name/";
-                        this.lastReq = JSON.stringify({ history: parseInt(this.nowHistoryTime), clanName: this.selectdata });
-                        this.inputtype = "text";
-                        break;
-                    case 3:
-                        this.lastApi = "/leader/";
-                        this.lastReq = JSON.stringify({ history: parseInt(this.nowHistoryTime), leaderName: this.selectdata });
-                        this.inputtype = "text";
-                        break;
-                    default:
-                        return;
-                }
-            },
-            deep: true,
-            immediate: false,
-        },
         proTableData: function (val) {
             $(".navbar-collapse").collapse("hide");
         },
@@ -113,6 +77,34 @@ var app = new Vue({
         this.defaultPage();
     },
     methods: {
+        resetSearch(val) {
+            switch (parseInt(val)) {
+                case 1:
+                    this.lastApi = "/rank/";
+                    this.rank = parseInt(this.selectdata);
+                    this.lastReq = JSON.stringify({ history: parseInt(this.nowHistoryTime) });
+                    this.inputtype = "number";
+                    break;
+                case 4:
+                    this.lastApi = "/score/";
+                    this.rank = parseInt(this.selectdata);
+                    this.lastReq = JSON.stringify({ history: parseInt(this.nowHistoryTime) });
+                    this.inputtype = "number";
+                    break;
+                case 2:
+                    this.lastApi = "/name/";
+                    this.lastReq = JSON.stringify({ history: parseInt(this.nowHistoryTime), clanName: this.selectdata });
+                    this.inputtype = "text";
+                    break;
+                case 3:
+                    this.lastApi = "/leader/";
+                    this.lastReq = JSON.stringify({ history: parseInt(this.nowHistoryTime), leaderName: this.selectdata });
+                    this.inputtype = "text";
+                    break;
+                default:
+                    return;
+            }
+        },
         disableMirror() {
             if (navigator.cookieEnabled) {
                 Cookies.set("mirror", "", { expires: 90 });
@@ -184,7 +176,8 @@ var app = new Vue({
         reset() {
             this.pageinfo.page = 0;
             this.nowHistoryTime = 0;
-            this.lastReq = JSON.stringify({ history: 0 });
+            //this.lastReq = JSON.stringify({ history: 0 });
+            console.log(this.lastReq);
             this.defaultPage();
         },
         showfoot() {
@@ -384,6 +377,7 @@ var app = new Vue({
             if (!this.rank) {
                 this.rank = -1;
             }
+            this.resetSearch(this.selected);
             this.pageinfo.page = 0;
             $.ajax({
                 url: this.apiUrl + this.lastApi + (this.rank != -1 ? this.rank : 0),
