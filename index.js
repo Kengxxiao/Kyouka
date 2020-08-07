@@ -305,20 +305,21 @@ var app = new Vue({
             this.lastReq = JSON.stringify({ history: parseInt(time) });
             this.defaultPage();
         },
-        processHistory(data) {
+        processHistory(historyV2) {
             $(".navbar-collapse").collapse("hide");
             this.historyData = [];
+            let data = Object.keys(historyV2);
             for (var i = 0; i < data.length; i++) {
                 let his = {
                     time: data[i],
-                    date: this.convertTime(data[i]),
+                    date: historyV2[data[i]] == "" ? this.convertTime(data[i]) : historyV2[data[i]] + "(" + this.convertTime(data[i]) + ")",
                 };
                 this.historyData.push(his);
             }
         },
         processData(data) {
             if (data.history != undefined) {
-                this.processHistory(data.history);
+                this.processHistory(data.historyV2);
             }
             this.showData.time = this.convertTime(data.ts);
             this.pageinfo.maxPage = Math.ceil((data.full * 1.0) / this.pageinfo.limit);
