@@ -79,16 +79,14 @@
             </nav>
             <br />
 
-            <div class="container">
-                <div
-                    class="panel panel-primary"
-                    id="mirror"
-                    v-if="(navigator.language || navigator.browserLanguage) == 'zh-CN' && !window.location.href.includes('kengxxiao.com') && (navigator.cookieEnabled && Cookies.get('mirror') == undefined)"
-                >
-                    <div class="panel-heading">
-                        <span class="glyphicon glyphicon-remove" v-on:click="disableMirror()"></span>
+            <div class="container" id="main">
+                <div v-if="serverMsg.length" v-for="im in serverMsg">
+                    <div v-if="im != undefined && im.show && isAllowedToShow(im.id)" class="panel panel-primary">
+                        <div class="panel-heading">
+                            <span class="glyphicon glyphicon-remove" v-on:click="disableMsg(im.id)"></span>
+                        </div>
+                        <div class="panel-body" v-html="im.html"></div>
                     </div>
-                    <div class="panel-body">检测到您可能来自中国大陆，当Github Pages不可用时，您可以使用该由Netlify提供的镜像站进入网站。<a href="https://kyouka.kengxxiao.com/">镜像链接</a></div>
                 </div>
                 <div class="visible-xs">
                     <button type="button" style="float: left; width: 49%;" class="btn btn-block btn-warning" onclick="window.location.href='https://nga.178.com/read.php?tid=22368702'">意见反馈(NGA)</button>
@@ -164,7 +162,6 @@
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/js-cookie@2.2.1/src/js.cookie.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
         <script src="index.js"></script>
     </body>

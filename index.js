@@ -45,6 +45,7 @@ var app = new Vue({
         },
         proTableData: [],
         favSelected: [],
+        serverMsg: [],
     },
     computed: {
         selectRange() {
@@ -105,11 +106,16 @@ var app = new Vue({
                     return;
             }
         },
-        disableMirror() {
-            if (navigator.cookieEnabled) {
-                Cookies.set("mirror", "", { expires: 90 });
+        isAllowedToShow(id) {
+            return JSON.parse(localStorage.getItem("disabledMsg")).indexOf(id) == -1;
+        },
+        disableMsg(id) {
+            let orig = JSON.parse(localStorage.getItem("disabledMsg"));
+            if (orig.indexOf(id) == -1) {
+                orig.push(id);
+                localStorage.setItem("disabledMsg", JSON.stringify(orig));
+                this.$forceUpdate();
             }
-            $("#mirror").hide();
         },
         convertTime(date) {
             return new Date(date * 1000).toLocaleString([], { minute: "numeric", hour: "numeric", day: "numeric", month: "narrow", year: "numeric" });
@@ -176,8 +182,6 @@ var app = new Vue({
         reset() {
             this.pageinfo.page = 0;
             this.nowHistoryTime = 0;
-            //this.lastReq = JSON.stringify({ history: 0 });
-            //console.log(this.lastReq);
             this.defaultPage();
         },
         showfoot() {
@@ -231,7 +235,7 @@ var app = new Vue({
         searchFav() {
             $(".search").button("loading");
             this.pageinfo.page = 0;
-            var favc = JSON.parse(Cookies.get("fav"));
+            var favc = JSON.parse(localStorage.getItem("fav"));
             for (var i = 0; i < favc.length; i++) {
                 ga("send", "event", "kyouka", "fav", favc[i]);
             }
@@ -241,17 +245,17 @@ var app = new Vue({
                 dataType: "JSON",
                 async: true,
                 contentType: "application/json",
-                data: JSON.stringify({ ids: JSON.parse(Cookies.get("fav")), history: parseInt(this.nowHistoryTime) }),
+                data: JSON.stringify({ ids: JSON.parse(localStorage.getItem("fav")), history: parseInt(this.nowHistoryTime) }),
                 success: this.processData,
                 error: this.serverError,
             });
         },
         favLeader(id) {
             let leaderId = this.proTableData[id].leader_viewer_id;
-            var fav = JSON.parse(Cookies.get("fav"));
+            var fav = JSON.parse(localStorage.getItem("fav"));
             var idx = fav.indexOf(leaderId);
             if (idx == -1) {
-                if (fav.length >= 5) {
+                if (fav.length >= 10) {
                     alert("收藏过多，请取消一些收藏的公会");
                     return;
                 }
@@ -263,7 +267,7 @@ var app = new Vue({
                 this.favSelected[id] = "glyphicon glyphicon-heart-empty";
             }
             this.$forceUpdate();
-            Cookies.set("fav", JSON.stringify(fav), { expires: 30 });
+            localStorage.setItem("fav", JSON.stringify(fav));
         },
         setTableData(table) {
             this.favSelected = [];
@@ -281,21 +285,21 @@ var app = new Vue({
                 this.showData.body.push(tableData);
                 this.favSelected.push("glyphicon glyphicon-heart-empty");
             }
-            if (navigator.cookieEnabled) {
-                if (Cookies.get("fav") == undefined) {
-                    Cookies.set("fav", "[]", { expires: 30 });
-                }
-                var fav = JSON.parse(Cookies.get("fav"));
-                for (let f of fav) {
-                    let xid = 0;
-                    for (let t of table) {
-                        if (t.leader_viewer_id == f) {
-                            this.favSelected[xid] = "glyphicon glyphicon-heart";
-                        }
-                        xid = xid + 1;
+
+            if (!localStorage.hasOwnProperty("fav")) {
+                localStorage.setItem("fav", "[]");
+            }
+            var fav = JSON.parse(localStorage.getItem("fav"));
+            for (let f of fav) {
+                let xid = 0;
+                for (let t of table) {
+                    if (t.leader_viewer_id == f) {
+                        this.favSelected[xid] = "glyphicon glyphicon-heart";
                     }
+                    xid = xid + 1;
                 }
             }
+
             this.proTableData = table;
             $(".search").button("reset");
         },
@@ -320,6 +324,53 @@ var app = new Vue({
         processData(data) {
             if (data.history != undefined) {
                 this.processHistory(data.historyV2);
+            }
+            if (data.serverMsg != undefined && data.serverMsg.length) {
+                if (!localStorage.hasOwnProperty("disabledMsg")) {
+                    localStorage.setItem("disabledMsg", "[]");
+                    localStorage.setItem("savedMsg", "[]");
+                }
+                let saved2 = JSON.parse(localStorage.getItem("savedMsg"));
+                let msgArray = [];
+                let defaultMsgArray = data.serverMsg;
+                for (let i = 0; i < data.serverMsg.length; i++) {
+                    if (saved2.indexOf(data.serverMsg[i]) == -1) msgArray.push(data.serverMsg[i]);
+                }
+                if (msgArray.length) {
+                    var self = this;
+                    $.ajax({
+                        url: this.apiUrl + "/serverMsg",
+                        type: "POST",
+                        dataType: "JSON",
+                        contentType: "application/json",
+                        data: JSON.stringify({ idList: msgArray }),
+                        async: true,
+                        success: function (data) {
+                            let saved = JSON.parse(localStorage.getItem("savedMsg"));
+                            for (let i = 0; i < saved.length; i++) {
+                                if (defaultMsgArray.indexOf(saved[i]) != -1) data.push(JSON.parse(localStorage.getItem("msg_" + saved[i])));
+                            }
+                            self.serverMsg = data;
+                            for (let i = 0; i < data.length; i++) {
+                                if (data[i] == undefined) {
+                                    continue;
+                                }
+                                if (saved.indexOf(data[i].id) == -1) {
+                                    localStorage.setItem("msg_" + data[i].id, JSON.stringify(data[i]));
+                                    saved.push(data[i].id);
+                                }
+                            }
+                            localStorage.setItem("savedMsg", JSON.stringify(saved));
+                        },
+                    });
+                } else {
+                    let saved = JSON.parse(localStorage.getItem("savedMsg"));
+                    for (let i = 0; i < saved.length; i++) {
+                        if (data.serverMsg.indexOf(saved[i]) != -1) {
+                            this.serverMsg.push(JSON.parse(localStorage.getItem("msg_" + saved[i])));
+                        }
+                    }
+                }
             }
             this.showData.time = this.convertTime(data.ts);
             this.pageinfo.maxPage = Math.ceil((data.full * 1.0) / this.pageinfo.limit);
@@ -390,7 +441,6 @@ var app = new Vue({
                 success: this.processData,
                 error: this.serverError,
             });
-            //ga('send', 'event', 'kyouka', 'search', this.lastReq)
         },
         getUrlKey(name, url) {
             return decodeURIComponent((new RegExp("[?|&]" + name + "=" + "([^&;]+?)(&|#|;|$)").exec(url) || [, ""])[1].replace(/\+/g, "%20")) || null;
