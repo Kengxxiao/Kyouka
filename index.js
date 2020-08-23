@@ -365,6 +365,7 @@ var app = new Vue({
                     });
                 } else {
                     let saved = JSON.parse(localStorage.getItem("savedMsg"));
+					this.serverMsg = []
                     for (let i = 0; i < saved.length; i++) {
                         if (data.serverMsg.indexOf(saved[i]) != -1) {
                             this.serverMsg.push(JSON.parse(localStorage.getItem("msg_" + saved[i])));
