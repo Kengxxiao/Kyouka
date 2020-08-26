@@ -35,7 +35,8 @@ var app = new Vue({
             baseTime: 1593464400,
             endTime: 1593964800,
         },
-        apiUrl: "https://service-kjcbcnmw-1254119946.gz.apigw.tencentcs.com/",
+        apiUrl: "http://127.0.0.1:5002/clan",
+        //apiUrl: "https://service-kjcbcnmw-1254119946.gz.apigw.tencentcs.com/",
         foot2show: false,
         foot2Info: {
             clanName: "",
@@ -46,6 +47,7 @@ var app = new Vue({
         proTableData: [],
         favSelected: [],
         serverMsg: [],
+        country: "",
     },
     computed: {
         selectRange() {
@@ -75,9 +77,24 @@ var app = new Vue({
         $(document).ajaxSend(function (ev, xhr, settings) {
             xhr.setRequestHeader("Custom-Source", "KyoukaOfficial");
         });
+        this.checkGeo();
         this.defaultPage();
     },
     methods: {
+        checkGeo() {
+            var self = this;
+            $.ajax({
+                url: "https://get.geojs.io/v1/ip/country.js",
+                type: "GET",
+                dataType: "JSONP",
+                async: true,
+                jsonp: "callback",
+                success: function (data) {
+                    self.country = data.country;
+                    self.$forceUpdate();
+                },
+            });
+        },
         resetSearch(val) {
             switch (parseInt(val)) {
                 case 1:
@@ -106,8 +123,10 @@ var app = new Vue({
                     return;
             }
         },
-        isAllowedToShow(id) {
-            return JSON.parse(localStorage.getItem("disabledMsg")).indexOf(id) == -1;
+        isAllowedToShow(im) {
+            let a = JSON.parse(localStorage.getItem("disabledMsg")).indexOf(im.id) == -1;
+            let b = im.regionLimit == undefined || im.regionLimit == this.country;
+            return a & b;
         },
         disableMsg(id) {
             let orig = JSON.parse(localStorage.getItem("disabledMsg"));
@@ -167,6 +186,7 @@ var app = new Vue({
             }
             if (val < 0 || val >= this.pageinfo.maxPage) return;
             $(".search").button("loading");
+            console.log(this.lastReq);
             $.ajax({
                 url: this.apiUrl + this.lastApi + val,
                 type: "POST",
