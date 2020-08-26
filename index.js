@@ -523,6 +523,7 @@ var app = new Vue({
                 type: "POST",
                 dataType: "JSON",
                 async: true,
+				contentType: "application/json",
                 data: this.lastReq,
                 success: this.processData,
                 error: this.serverError,
