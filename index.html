@@ -81,7 +81,7 @@
 
             <div class="container" id="main">
                 <div v-if="serverMsg.length" v-for="im in serverMsg">
-                    <div v-if="im != undefined && im.show && isAllowedToShow(im.id)" class="panel panel-primary">
+                    <div v-if="im != undefined && im.show && isAllowedToShow(im)" class="panel panel-primary">
                         <div class="panel-heading">
                             <span class="glyphicon glyphicon-remove" v-on:click="disableMsg(im.id)"></span>
                         </div>
