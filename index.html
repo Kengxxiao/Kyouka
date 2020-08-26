@@ -56,10 +56,15 @@
                         </div>
                     </div>
                     <form class="navbar-form navbar-right hidden-xs">
-                        <button type="button" class="btn btn-block search" data-loading-text="获取中..." @click="searchRank">查询档线</button>
-                    </form>
-                    <form class="navbar-form navbar-right hidden-xs">
-                        <button type="button" class="btn btn-block search" data-loading-text="获取中..." @click="searchFav">查询收藏</button>
+                        <li class="dropdown" style="list-style: none;">
+                            <button type="button" class="btn btn-block search" data-toggle="dropdown" data-loading-text="获取中...">附加功能 <span class="caret"></span></button>
+                            <ul class="dropdown-menu">
+                                <button type="button" class="btn btn-block" @click="searchFav">查询收藏</button>
+                                <button type="button" class="btn btn-block" @click="searchRank">查询档线</button>
+                                <button type="button" class="btn btn-block btn-primary" @click="exportSavedData">导出保存的数据</button>
+                                <button type="button" class="btn btn-block btn-warning" @click="removeAllSavedData">移除保存的数据</button>
+                            </ul>
+                        </li>
                     </form>
                     <form class="navbar-form navbar-right hidden-xs">
                         <li class="dropdown" style="list-style: none;">
@@ -70,10 +75,10 @@
                         </li>
                     </form>
                     <form class="navbar-form navbar-right hidden-xs">
-                        <button type="button" class="btn btn-block btn-warning" onclick="window.location.href='https://github.com/Kengxxiao/Kyouka/issues'">意见反馈(Github)</button>
+                        <button type="button" class="btn btn-block btn-info" onclick="window.location.href='https://github.com/Kengxxiao/Kyouka/issues'">意见反馈(Github)</button>
                     </form>
                     <form class="navbar-form navbar-right hidden-xs">
-                        <button type="button" class="btn btn-block btn-warning" onclick="window.location.href='https://nga.178.com/read.php?tid=22368702'">意见反馈(NGA)</button>
+                        <button type="button" class="btn btn-block btn-info" onclick="window.location.href='https://nga.178.com/read.php?tid=22368702'">意见反馈(NGA)</button>
                     </form>
                 </div>
             </nav>
@@ -88,15 +93,24 @@
                         <div class="panel-body" v-html="im.html"></div>
                     </div>
                 </div>
+
                 <div class="visible-xs">
-                    <button type="button" style="float: left; width: 49%;" class="btn btn-block btn-warning" onclick="window.location.href='https://nga.178.com/read.php?tid=22368702'">意见反馈(NGA)</button>
-                    <button type="button" style="float: right; width: 49%; margin-top: 0px;" class="btn btn-block btn-warning" onclick="window.location.href='https://github.com/Kengxxiao/Kyouka/issues'">意见反馈(Github)</button>
-                    <br />
-                    <br />
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <button type="button" style="float: left; width: 49%;" class="btn btn-block btn-info" onclick="window.location.href='https://nga.178.com/read.php?tid=22368702'">意见反馈(NGA)</button>
+                            <button type="button" style="float: right; width: 49%; margin-top: 0px;" class="btn btn-block btn-info" onclick="window.location.href='https://github.com/Kengxxiao/Kyouka/issues'">意见反馈(Github)</button>
+                            <br />
+                            <br />
+                            <button type="button" style="float: left; width: 49%;" class="btn btn-block btn-primary" @click="exportSavedData">导出保存的数据</button>
+                            <button type="button" style="float: right; width: 49%; margin-top: 0px;" class="btn btn-block btn-warning" @click="removeAllSavedData()">移除保存的数据</button>
+                        </div>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-block search" data-loading-text="获取中..." @click="searchFav">查询收藏</button>
+                        <button type="button" class="btn btn-block search" data-loading-text="获取中..." @click="searchRank">查询档线</button>
+                        <br />
+                    </div>
                 </div>
-                <button type="button" class="btn btn-block search visible-xs" data-loading-text="获取中..." @click="searchFav()">查询收藏</button>
-                <button type="button" class="btn btn-block search visible-xs" data-loading-text="获取中..." @click="searchRank()">查询档线</button>
-                <br class="visible-xs" />
                 <input :type="inputtype" id="bar" v-model="selectdata" class="form-control" placeholder="查询内容(支持正则表达式)" required autofocus />
                 <br />
                 <div class="form-group">
@@ -121,6 +135,9 @@
                                 <td v-for="(xd,idx) in item" :key="idx">{{xd}}</td>
                                 <td @click="favLeader(i)">
                                     <span :class="favSelected[i]"> </span>
+                                </td>
+                                <td @click="saveDataLocal(showData.ts, i)">
+                                    <span :class="getDataLocal(showData.ts, i)"> </span>
                                 </td>
                             </tr>
                         </tbody>
@@ -163,6 +180,8 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/exceljs"></script>
+        <script src="https://cdn.jsdelivr.net/npm/file-saver"></script>
         <script src="index.js"></script>
     </body>
 </html>

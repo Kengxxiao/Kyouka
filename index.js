@@ -2,9 +2,10 @@ var app = new Vue({
     el: "#Kyouka",
     data: {
         showData: {
-            header: ["排名", "公会名", "分数", "会长名", "收藏"],
+            header: ["排名", "公会名", "分数", "会长名", "收藏", "保存"],
             time: "",
             body: [],
+            ts: 0,
         },
         historyData: [],
         inputtype: "text",
@@ -48,6 +49,7 @@ var app = new Vue({
         favSelected: [],
         serverMsg: [],
         country: "",
+        savedData: [],
     },
     computed: {
         selectRange() {
@@ -77,6 +79,9 @@ var app = new Vue({
         $(document).ajaxSend(function (ev, xhr, settings) {
             xhr.setRequestHeader("Custom-Source", "KyoukaOfficial");
         });
+        if (!localStorage.hasOwnProperty("savedData")) {
+            localStorage.setItem("savedData", "{}");
+        }
         this.checkGeo();
         this.defaultPage();
     },
@@ -94,6 +99,36 @@ var app = new Vue({
                     self.$forceUpdate();
                 },
             });
+        },
+        async exportSavedData() {
+            let wb = new ExcelJS.Workbook();
+            let ws = wb.addWorksheet("Kyouka");
+            let p2 = JSON.parse(localStorage.getItem("savedData"));
+            wb.creator = "Kyouka Clan Data Maker";
+            ws.columns = [{ width: 24 }, { width: 8 }, { width: 24 }, { width: 12 }, { width: 24 }];
+            for (let key in p2) {
+                ws.addRow(["会长ID", key]);
+                ws.addRow(["时间", "排名", "公会名", "分数", "会长名"]);
+                let data = p2[key];
+                let sortedTime = {};
+                for (let i = 0; i < data.time.length; i++) {
+                    sortedTime[data.time[i]] = i;
+                }
+                let s2 = Object.keys(sortedTime).sort();
+                for (let i = 0; i < s2.length; i++) {
+                    ws.addRow([this.convertTime(data.time[sortedTime[s2[i]]]), data.data[sortedTime[s2[i]]].rank, data.data[sortedTime[s2[i]]].clan_name, data.data[sortedTime[s2[i]]].damage, data.data[sortedTime[s2[i]]].leader_name]);
+                }
+                ws.addRow([]);
+            }
+            let b = await wb.xlsx.writeBuffer();
+            saveAs(new Blob([b], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }), "Kyouka_" + Date.parse(new Date()) / 1000 + ".xlsx");
+        },
+        removeAllSavedData() {
+            if (confirm("您确定要移除所有保存的数据吗？")) {
+                localStorage.setItem("savedData", "{}");
+                this.$forceUpdate();
+                alert("移除已完成");
+            }
         },
         resetSearch(val) {
             switch (parseInt(val)) {
@@ -186,7 +221,6 @@ var app = new Vue({
             }
             if (val < 0 || val >= this.pageinfo.maxPage) return;
             $(".search").button("loading");
-            console.log(this.lastReq);
             $.ajax({
                 url: this.apiUrl + this.lastApi + val,
                 type: "POST",
@@ -270,6 +304,35 @@ var app = new Vue({
                 error: this.serverError,
             });
         },
+        saveDataLocal(ts, id) {
+            let sv = JSON.parse(localStorage.getItem("savedData"));
+            let leader = this.proTableData[id].leader_viewer_id;
+            if (sv[leader] == undefined) {
+                sv[leader] = { time: [], data: [] };
+            }
+            let indexA = sv[leader].time.indexOf(ts);
+            if (indexA != -1) {
+                sv[leader].time.splice(indexA, 1);
+                sv[leader].data.splice(indexA, 1);
+                if (sv[leader].time.length == 0) delete sv[leader];
+            } else {
+                sv[leader].time.push(ts);
+                sv[leader].data.push(this.proTableData[id]);
+            }
+            localStorage.setItem("savedData", JSON.stringify(sv));
+            this.$forceUpdate();
+        },
+        getDataLocal(ts, id) {
+            if (!localStorage.hasOwnProperty("savedData")) return "glyphicon glyphicon-floppy-disk";
+            let sv = JSON.parse(localStorage.getItem("savedData"));
+            let leader = this.proTableData[id].leader_viewer_id;
+            if (sv[leader] != undefined) {
+                if (sv[leader].time.indexOf(ts) != -1) {
+                    return "glyphicon glyphicon-floppy-saved";
+                }
+            }
+            return "glyphicon glyphicon-floppy-disk";
+        },
         favLeader(id) {
             let leaderId = this.proTableData[id].leader_viewer_id;
             var fav = JSON.parse(localStorage.getItem("fav"));
@@ -283,7 +346,6 @@ var app = new Vue({
                 this.favSelected[id] = "glyphicon glyphicon-heart";
             } else {
                 fav.splice(idx, 1);
-
                 this.favSelected[id] = "glyphicon glyphicon-heart-empty";
             }
             this.$forceUpdate();
@@ -394,6 +456,7 @@ var app = new Vue({
                 }
             }
             this.showData.time = this.convertTime(data.ts);
+            this.showData.ts = data.ts;
             this.pageinfo.maxPage = Math.ceil((data.full * 1.0) / this.pageinfo.limit);
             this.setTableData(data.data);
             this.processPage();
@@ -437,6 +500,7 @@ var app = new Vue({
                 data: JSON.stringify({ history: parseInt(this.nowHistoryTime) }),
                 success: (data) => {
                     this.showData.time = this.convertTime(data.ts);
+                    this.showData.ts = data.ts;
                     this.processData(data);
                 },
                 error: this.serverError,
@@ -459,7 +523,6 @@ var app = new Vue({
                 type: "POST",
                 dataType: "JSON",
                 async: true,
-                contentType: "application/json",
                 data: this.lastReq,
                 success: this.processData,
                 error: this.serverError,
