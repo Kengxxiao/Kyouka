@@ -93,23 +93,10 @@
                         <div class="panel-body" v-html="im.html"></div>
                     </div>
                 </div>
-
                 <div class="visible-xs">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <button type="button" style="float: left; width: 49%;" class="btn btn-block btn-info" onclick="window.location.href='https://nga.178.com/read.php?tid=22368702'">意见反馈(NGA)</button>
-                            <button type="button" style="float: right; width: 49%; margin-top: 0px;" class="btn btn-block btn-info" onclick="window.location.href='https://github.com/Kengxxiao/Kyouka/issues'">意见反馈(Github)</button>
-                            <br />
-                            <br />
-                            <button type="button" style="float: left; width: 49%;" class="btn btn-block btn-primary" @click="exportSavedData">导出保存的数据</button>
-                            <button type="button" style="float: right; width: 49%; margin-top: 0px;" class="btn btn-block btn-warning" @click="removeAllSavedData()">移除保存的数据</button>
-                        </div>
-                    </div>
-                    <div>
-                        <button type="button" class="btn btn-block search" data-loading-text="获取中..." @click="searchFav">查询收藏</button>
-                        <button type="button" class="btn btn-block search" data-loading-text="获取中..." @click="searchRank">查询档线</button>
-                        <br />
-                    </div>
+                    <button type="button" class="btn btn-block search" data-loading-text="获取中..." @click="searchFav">查询收藏</button>
+                    <button type="button" class="btn btn-block search" data-loading-text="获取中..." @click="searchRank">查询档线</button>
+                    <br />
                 </div>
                 <input :type="inputtype" id="bar" v-model="selectdata" class="form-control" placeholder="查询内容(支持正则表达式)" required autofocus />
                 <br />
@@ -157,6 +144,18 @@
                     <h5 class="sub-header hpDetail">{{foot2Info.zminfo}}</h5>
                     <div class="progress">
                         <div class="progress-bar hp" :style="foot2Info.per">{{foot2Info.perText}}</div>
+                    </div>
+                </div>
+                <div class="visible-xs">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <button type="button" style="float: left; width: 49%;" class="btn btn-block btn-info" onclick="window.location.href='https://nga.178.com/read.php?tid=22368702'">意见反馈(NGA)</button>
+                            <button type="button" style="float: right; width: 49%; margin-top: 0px;" class="btn btn-block btn-info" onclick="window.location.href='https://github.com/Kengxxiao/Kyouka/issues'">意见反馈(Github)</button>
+                            <br />
+                            <br />
+                            <button type="button" style="float: left; width: 49%;" class="btn btn-block btn-primary" @click="exportSavedData">导出保存的数据</button>
+                            <button type="button" style="float: right; width: 49%; margin-top: 0px;" class="btn btn-block btn-warning" @click="removeAllSavedData()">移除保存的数据</button>
+                        </div>
                     </div>
                 </div>
                 <div class="visible-xs">
