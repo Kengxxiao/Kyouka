@@ -119,7 +119,7 @@
                         </thead>
                         <tbody id="clanCore">
                             <tr v-for="(item,i) in showData.body" :key="i" @click="calcHp(item)">
-                                <td v-for="(xd,idx) in item" :key="idx">{{xd}}</td>
+                                <td v-for="(xd,idx) in item" :key="idx">{{idx == 'damage' ? Number(xd).toLocaleString() : xd}}</td>
                                 <td @click="favLeader(i)">
                                     <span :class="favSelected[i]"> </span>
                                 </td>
