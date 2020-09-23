@@ -361,7 +361,7 @@ var app = new Vue({
                 let tableData = {
                     rank: item.rank,
                     clan_name: item.clan_name,
-                    damage: Number(item.damage).toLocaleString(),
+                    damage: item.damage,
                     leader_name: item.leader_name,
                 };
                 this.showData.body.push(tableData);
