@@ -29,10 +29,11 @@ var app = new Vue({
         bossData: {
             scoreRate: [
                 [1, 1, 1.3, 1.3, 1.5],
-                [1.3, 1.3, 1.8, 1.8, 2],
+                [1.4, 1.4, 1.8, 1.8, 2],
+                [2.0, 2.0, 2.5, 2.5, 3],
             ],
             hp: [6000000, 8000000, 10000000, 12000000, 20000000],
-            max: 2,
+            phase: [1, 2, 7],
             baseTime: 1593464400,
             endTime: 1593964800,
         },
@@ -86,6 +87,11 @@ var app = new Vue({
         this.defaultPage();
     },
     methods: {
+        getClanBattlePhase(zm) {
+            for (let i = this.bossData.phase.length - 1; i >= 0; i--) {
+                if (zm >= this.bossData.phase[i]) return i;
+            }
+        },
         checkGeo() {
             var self = this;
             $.ajax({
@@ -262,11 +268,11 @@ var app = new Vue({
             var remainHp = 0.0;
             var remainPer = 0.0;
             while (true) {
-                var nowZm = zm > this.bossData.max ? this.bossData.max - 1 : zm - 1;
-                cc += this.bossData.scoreRate[nowZm][king - 1] * this.bossData.hp[king - 1];
+                let phase = this.getClanBattlePhase(zm);
+                cc += this.bossData.scoreRate[phase][king - 1] * this.bossData.hp[king - 1];
                 if (cc > hpBase) {
-                    cc -= this.bossData.scoreRate[nowZm][king - 1] * this.bossData.hp[king - 1];
-                    remain = (hpBase - cc) / this.bossData.scoreRate[nowZm][king - 1];
+                    cc -= this.bossData.scoreRate[phase][king - 1] * this.bossData.hp[king - 1];
+                    remain = (hpBase - cc) / this.bossData.scoreRate[phase][king - 1];
                     damage += remain;
                     remainPer = 1.0 - remain / this.bossData.hp[king - 1];
                     remainHp = this.bossData.hp[king - 1] - remain;
@@ -523,7 +529,7 @@ var app = new Vue({
                 type: "POST",
                 dataType: "JSON",
                 async: true,
-				contentType: "application/json",
+                contentType: "application/json",
                 data: this.lastReq,
                 success: this.processData,
                 error: this.serverError,
