@@ -10,7 +10,12 @@ var app = new Vue({
         historyData: [],
         inputtype: "text",
         selected: 2,
-        selectType: { "2": "按公会名", "1": "按排名", "3": "按会长名", "4": "按分数" },
+        selectType: {
+            "2": "按公会名",
+            "1": "按排名",
+            "3": "按会长名",
+            "4": "按分数"
+        },
         selectdata: "",
         pageinfo: {
             page: 0,
@@ -20,7 +25,9 @@ var app = new Vue({
             prevDis: "disabled",
             nextDis: "disabled",
         },
-        lastReq: JSON.stringify({ history: 0 }),
+        lastReq: JSON.stringify({
+            history: 0
+        }),
         lastApi: "",
         mock: true,
         allow: true,
@@ -54,7 +61,10 @@ var app = new Vue({
     },
     computed: {
         selectRange() {
-            const { selected, selectdata } = this;
+            const {
+                selected,
+                selectdata
+            } = this;
             return {
                 selected,
                 selectdata,
@@ -62,7 +72,7 @@ var app = new Vue({
         },
     },
     watch: {
-        proTableData: function (val) {
+        proTableData: function(val) {
             $(".navbar-collapse").collapse("hide");
         },
     },
@@ -77,7 +87,7 @@ var app = new Vue({
             }, 300);
             return;
         }
-        $(document).ajaxSend(function (ev, xhr, settings) {
+        $(document).ajaxSend(function(ev, xhr, settings) {
             xhr.setRequestHeader("Custom-Source", "KyoukaOfficial");
         });
         if (!localStorage.hasOwnProperty("savedData")) {
@@ -100,7 +110,7 @@ var app = new Vue({
                 dataType: "JSONP",
                 async: true,
                 jsonp: "callback",
-                success: function (data) {
+                success: function(data) {
                     self.country = data.country;
                     self.$forceUpdate();
                 },
@@ -111,7 +121,17 @@ var app = new Vue({
             let ws = wb.addWorksheet("Kyouka");
             let p2 = JSON.parse(localStorage.getItem("savedData"));
             wb.creator = "Kyouka Clan Data Maker";
-            ws.columns = [{ width: 24 }, { width: 8 }, { width: 24 }, { width: 12 }, { width: 24 }];
+            ws.columns = [{
+                width: 24
+            }, {
+                width: 8
+            }, {
+                width: 24
+            }, {
+                width: 12
+            }, {
+                width: 24
+            }];
             for (let key in p2) {
                 ws.addRow(["会长ID", key]);
                 ws.addRow(["时间", "排名", "公会名", "分数", "会长名"]);
@@ -127,7 +147,9 @@ var app = new Vue({
                 ws.addRow([]);
             }
             let b = await wb.xlsx.writeBuffer();
-            saveAs(new Blob([b], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }), "Kyouka_" + Date.parse(new Date()) / 1000 + ".xlsx");
+            saveAs(new Blob([b], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            }), "Kyouka_" + Date.parse(new Date()) / 1000 + ".xlsx");
         },
         removeAllSavedData() {
             if (confirm("您确定要移除所有保存的数据吗？")) {
@@ -141,23 +163,33 @@ var app = new Vue({
                 case 1:
                     this.lastApi = "/rank/";
                     this.rank = parseInt(this.selectdata);
-                    this.lastReq = JSON.stringify({ history: parseInt(this.nowHistoryTime) });
+                    this.lastReq = JSON.stringify({
+                        history: parseInt(this.nowHistoryTime)
+                    });
                     this.inputtype = "number";
                     break;
                 case 4:
                     this.lastApi = "/score/";
                     this.rank = parseInt(this.selectdata);
-                    this.lastReq = JSON.stringify({ history: parseInt(this.nowHistoryTime) });
+                    this.lastReq = JSON.stringify({
+                        history: parseInt(this.nowHistoryTime)
+                    });
                     this.inputtype = "number";
                     break;
                 case 2:
                     this.lastApi = "/name/";
-                    this.lastReq = JSON.stringify({ history: parseInt(this.nowHistoryTime), clanName: this.selectdata });
+                    this.lastReq = JSON.stringify({
+                        history: parseInt(this.nowHistoryTime),
+                        clanName: this.selectdata
+                    });
                     this.inputtype = "text";
                     break;
                 case 3:
                     this.lastApi = "/leader/";
-                    this.lastReq = JSON.stringify({ history: parseInt(this.nowHistoryTime), leaderName: this.selectdata });
+                    this.lastReq = JSON.stringify({
+                        history: parseInt(this.nowHistoryTime),
+                        leaderName: this.selectdata
+                    });
                     this.inputtype = "text";
                     break;
                 default:
@@ -178,7 +210,13 @@ var app = new Vue({
             }
         },
         convertTime(date) {
-            return new Date(date * 1000).toLocaleString([], { minute: "numeric", hour: "numeric", day: "numeric", month: "narrow", year: "numeric" });
+            return new Date(date * 1000).toLocaleString([], {
+                minute: "numeric",
+                hour: "numeric",
+                day: "numeric",
+                month: "narrow",
+                year: "numeric"
+            });
         },
         serverError(xhr, state, errorThrown) {
             $(".search").button("reset");
@@ -260,6 +298,8 @@ var app = new Vue({
         calcHp(clan) {
             let clanName = clan.clan_name;
             let hpBase = clan.damage;
+            if (hpBase > 100000000000)
+                hpBase /= 100000;
             var zm = 1;
             var king = 1;
             var cc = 0.0;
@@ -305,7 +345,10 @@ var app = new Vue({
                 dataType: "JSON",
                 async: true,
                 contentType: "application/json",
-                data: JSON.stringify({ ids: JSON.parse(localStorage.getItem("fav")), history: parseInt(this.nowHistoryTime) }),
+                data: JSON.stringify({
+                    ids: JSON.parse(localStorage.getItem("fav")),
+                    history: parseInt(this.nowHistoryTime)
+                }),
                 success: this.processData,
                 error: this.serverError,
             });
@@ -314,7 +357,10 @@ var app = new Vue({
             let sv = JSON.parse(localStorage.getItem("savedData"));
             let leader = this.proTableData[id].leader_viewer_id;
             if (sv[leader] == undefined) {
-                sv[leader] = { time: [], data: [] };
+                sv[leader] = {
+                    time: [],
+                    data: []
+                };
             }
             let indexA = sv[leader].time.indexOf(ts);
             if (indexA != -1) {
@@ -394,7 +440,9 @@ var app = new Vue({
         historyRank(time) {
             this.pageinfo.page = 0;
             this.nowHistoryTime = time;
-            this.lastReq = JSON.stringify({ history: parseInt(time) });
+            this.lastReq = JSON.stringify({
+                history: parseInt(time)
+            });
             this.defaultPage();
         },
         processHistory(historyV2) {
@@ -431,9 +479,11 @@ var app = new Vue({
                         type: "POST",
                         dataType: "JSON",
                         contentType: "application/json",
-                        data: JSON.stringify({ idList: msgArray }),
+                        data: JSON.stringify({
+                            idList: msgArray
+                        }),
                         async: true,
-                        success: function (data) {
+                        success: function(data) {
                             let saved = JSON.parse(localStorage.getItem("savedMsg"));
                             for (let i = 0; i < saved.length; i++) {
                                 if (defaultMsgArray.indexOf(saved[i]) != -1) data.push(JSON.parse(localStorage.getItem("msg_" + saved[i])));
@@ -472,7 +522,9 @@ var app = new Vue({
             this.pageinfo.page = 0;
             this.lastApi = "/page/";
             if (this.nowHistoryTime == 0) {
-                this.lastReq = JSON.stringify({ history: 0 });
+                this.lastReq = JSON.stringify({
+                    history: 0
+                });
                 $.ajax({
                     url: this.apiUrl + "/default",
                     type: "GET",
@@ -488,7 +540,9 @@ var app = new Vue({
                     dataType: "JSON",
                     contentType: "application/json",
                     async: true,
-                    data: JSON.stringify({ history: parseInt(this.nowHistoryTime) }),
+                    data: JSON.stringify({
+                        history: parseInt(this.nowHistoryTime)
+                    }),
                     success: this.processData,
                     error: this.serverError,
                 });
@@ -503,7 +557,9 @@ var app = new Vue({
                 dataType: "JSON",
                 async: true,
                 contentType: "application/json",
-                data: JSON.stringify({ history: parseInt(this.nowHistoryTime) }),
+                data: JSON.stringify({
+                    history: parseInt(this.nowHistoryTime)
+                }),
                 success: (data) => {
                     this.showData.time = this.convertTime(data.ts);
                     this.showData.ts = data.ts;
