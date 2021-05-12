@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title></title>
+    <script src='lib/kyoukanet.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div id="chart" style="width: 1600px;height:800px;">
+
+        </div>
+        <div style="display: flex; flex-direction: row; margin-left: 40px;" v-show="inited">
+            <label v-for="r in need_rank">
+                <input type="checkbox" :checked="rank.indexOf(r) != -1" @change="checked(r)">{{r}}</input>
+            </label>
+        </div>
+    </div>
+    <script>
+        const {
+            request_dataline
+        } = wasm_bindgen;
+        const w = async () => {
+            await wasm_bindgen("./lib/kyoukanet.wasm");
+            var app = new Vue({
+                el: "#app",
+                data: {
+                    api_dataline: {},
+                    forecast: [],
+                    rank: [1200, 2800],
+                    need_rank: [1, 3, 10, 20, 50, 200, 600, 1200, 2800, 5000, 10000, 15000, 25000, 40000, 60000],
+                    inited: false
+                },
+                async mounted() {
+                    let p = await request_dataline();
+                    this.api_dataline = p.api_dataline;
+                    this.forecast = p.forecast;
+                    this.refreshLine();
+                    this.inited = true;
+                },
+                methods: {
+                    refreshLine() {
+                        let temp_x_se = [];
+                        let temp_y_se = [];
+
+                        let last = 0;
+                        for (let k in this.api_dataline) {
+                            temp_x_se.push(new Date(k * 1000).toLocaleString());
+                            last = k * 1000;
+                        }
+                        for (let k = 1; k <= 24; k++) {
+                            temp_x_se.push(new Date(last + k * 1800000).toLocaleString());
+                        }
+
+                        let rank_data = [];
+                        for (let r in this.rank) {
+                            rank_data.push({
+                                rank: this.rank[r],
+                                data: []
+                            })
+                        }
+                        for (let k in this.api_dataline) {
+                            for (let j in this.api_dataline[k]) {
+                                let search = rank_data.find(x => x.rank == this.api_dataline[k][j].rank);
+                                if (search != undefined)
+                                    search.data.push(this.api_dataline[k][j].score);
+                            }
+                        }
+
+                        let legend = []
+                        for (let r in this.rank) {
+                            let rst = rank_data.find(x => x.rank == this.rank[r]);
+                            let forecast = this.forecast.find(x => x.rank == this.rank[r]);
+
+                            if (rst == undefined || forecast == undefined)
+                                continue;
+                            legend.push(this.rank[r] + '线');
+                            if (forecast.data.length >= 46)
+                                legend.push(this.rank[r] + "线预测");
+
+                            temp_y_se.push({
+                                name: this.rank[r] + '线',
+                                type: 'line',
+                                data: rst.data,
+                                smooth: true,
+                                itemStyle: {
+                                    normal: {
+                                        lineStyle: {
+                                            width: 2,
+                                            type: "solid"
+                                        }
+                                    }
+                                }
+                            });
+                            if (forecast.data.length >= 46)
+                                temp_y_se.push({
+                                    name: this.rank[r] + "线预测",
+                                    type: 'line',
+                                    data: forecast.data,
+                                    smooth: false,
+                                    itemStyle: {
+                                        normal: {
+                                            lineStyle: {
+                                                width: 2,
+                                                type: "dotted"
+                                            }
+                                        }
+                                    }
+                                })
+                        }
+                        let chart_elem = document.getElementById("chart");
+                        let chart = echarts.init(chart_elem);
+                        var option = {
+                            title: {
+                                text: '公会战分数预测（测试版）'
+                            },
+                            tooltip: {},
+                            legend: {
+                                data: legend
+                            },
+                            xAxis: {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: temp_x_se,
+                                axisLine: {
+                                    lineStyle: {
+                                        color: 'red'
+                                    }
+                                },
+                                axisLabel: {
+                                    rotate: 27,
+                                    interval: 0
+                                }
+                            },
+                            yAxis: {
+                                type: 'value',
+                                axisLabel: {
+                                    formatter: '{value}分'
+                                }
+                            },
+                            series: temp_y_se
+                        };
+                        chart.clear();
+                        chart.setOption(option);
+                    },
+                    checked(rank) {
+                        let idx = this.rank.indexOf(rank);
+                        if (idx == -1)
+                            this.rank.push(rank);
+                        else
+                            this.rank.splice(idx, 1);
+                        this.refreshLine();
+                    }
+                }
+            });
+        }
+        w();
+    </script>
+</body>
+
+</html>
