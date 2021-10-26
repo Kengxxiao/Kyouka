@@ -39,7 +39,11 @@ var app = new Vue({
                 [1.4, 1.4, 1.8, 1.8, 2],
                 [2.0, 2.0, 2.5, 2.5, 3],
             ],
-            hp: [6000000, 8000000, 10000000, 12000000, 15000000],
+            hp: [
+                [6000000, 8000000, 10000000, 12000000, 15000000],
+                [6000000, 8000000, 10000000, 12000000, 15000000],
+                [7000000, 9000000, 12000000, 14000000, 17000000]
+            ],
             phase: [1, 4, 11],
             baseTime: 1593464400,
             endTime: 1593964800,
@@ -307,18 +311,19 @@ var app = new Vue({
             var damage = 0;
             var remainHp = 0.0;
             var remainPer = 0.0;
+            let phase = 0;
             while (true) {
-                let phase = this.getClanBattlePhase(zm);
-                cc += this.bossData.scoreRate[phase][king - 1] * this.bossData.hp[king - 1];
+                phase = this.getClanBattlePhase(zm);
+                cc += this.bossData.scoreRate[phase][king - 1] * this.bossData.hp[phase][king - 1];
                 if (cc > hpBase) {
-                    cc -= this.bossData.scoreRate[phase][king - 1] * this.bossData.hp[king - 1];
+                    cc -= this.bossData.scoreRate[phase][king - 1] * this.bossData.hp[phase][king - 1];
                     remain = (hpBase - cc) / this.bossData.scoreRate[phase][king - 1];
                     damage += remain;
-                    remainPer = 1.0 - remain / this.bossData.hp[king - 1];
-                    remainHp = this.bossData.hp[king - 1] - remain;
+                    remainPer = 1.0 - remain / this.bossData.hp[phase][king - 1];
+                    remainHp = this.bossData.hp[phase][king - 1] - remain;
                     break;
                 }
-                damage += this.bossData.hp[king - 1];
+                damage += this.bossData.hp[phase][king - 1];
                 if (king == 5) {
                     zm++;
                     king = 1;
@@ -329,7 +334,7 @@ var app = new Vue({
             remainPer *= 100;
 
             this.foot2Info.clanName = clanName;
-            this.foot2Info.zminfo = zm + "周目" + king + "王 [" + parseInt(remainHp) + "/" + this.bossData.hp[king - 1] + "]";
+            this.foot2Info.zminfo = zm + "周目" + king + "王 [" + parseInt(remainHp) + "/" + this.bossData.hp[phase][king - 1] + "]";
             this.setFootPer(remainPer);
         },
         searchFav() {
